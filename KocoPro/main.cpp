@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <QGraphicsScene>
 
 int main(int argc, char *argv[])
 {
@@ -9,4 +10,3 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 }
-///aaa
