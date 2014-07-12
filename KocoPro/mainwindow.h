@@ -21,9 +21,11 @@ public:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene MainScene;
+    QGraphicsScene SmallScene;
     int GridRowNum,GridColumNum;
-    double GridWidth;
-    static const int MAXNUM = 1024;///THE MAXNUM OF GridRowNum,GridColumNum
+    double GridWidth,SmallGridWidth;
+    double MainToSmallDx,MainToSmallDy,MainToSmallD;
+    static const int MAXNUM = 256;///THE MAXNUM OF GridRowNum,GridColumNum
 };
 
 #endif // MAINWINDOW_H
