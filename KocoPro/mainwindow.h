@@ -19,6 +19,9 @@ public:
     void InitGrid(int Rows=-1,int Colums=-1);
 
 private:
+    void mouseMoveEvent(QMouseEvent *event);
+
+private:
     Ui::MainWindow *ui;
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
@@ -26,6 +29,7 @@ private:
     double GridWidth,SmallGridWidth;
     double MainToSmallDx,MainToSmallDy,MainToSmallD;
     static const int MAXNUM = 256;///THE MAXNUM OF GridRowNum,GridColumNum
+
 };
 
 #endif // MAINWINDOW_H
