@@ -72,7 +72,7 @@ void MainWindow::InitGrid(int Rows,int Colums)
     SmallScene.addLine(L,U,L,D,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(R,U,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
 }
-
+/*
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     QRect gViewRect = QRect(ui->graphicsView->pos() + ui->centralWidget->pos(),ui->graphicsView->size());///graphicsView's position
@@ -81,7 +81,5 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         QMessageBox::about(this,"MouseMoveEvent","in_gView");
     }
     else QMessageBox::about(this,"MouseMoveEvent","out_gView : "+QString::number(event->x())+" , "+QString::number(event->y()));
-    /*
-     * 鼠标移动到控件上时，程序执行的是空间的mouseMoveEvent()事件，而不是主窗口的mouseMoveEvent()事件。你要不就重载控件的mouseMoveEvent()，要不就在主窗口添加eventFilter()事件，控件installEventFilter（）；
-     */
 }
+*/

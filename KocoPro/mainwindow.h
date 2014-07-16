@@ -19,9 +19,6 @@ public:
     void InitGrid(int Rows=-1,int Colums=-1);
 
 private:
-    void mouseMoveEvent(QMouseEvent *event);
-
-private:
     Ui::MainWindow *ui;
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
