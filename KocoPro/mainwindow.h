@@ -16,16 +16,18 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void InitGrid(int Rows=-1,int Colums=-1);
+    void InitGrid(int Rows=-1,int Columns=-1);
 
 public:
     Ui::MainWindow *ui;
-    int GridRowNum,GridColumNum;
+    int GridRowNum,GridColumnNum;
     double GridWidth,SmallGridWidth;
     double MainToSmallDx,MainToSmallDy,MainToSmallD;
     static const int MAXNUM = 256;///THE MAXNUM OF GridRowNum,GridColumNum
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
+    QRect ViewRect;
+
 };
 
 #endif // MAINWINDOW_H

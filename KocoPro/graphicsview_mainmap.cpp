@@ -11,11 +11,34 @@ GraphicsView_Mainmap::GraphicsView_Mainmap(QWidget *parent) :
 void GraphicsView_Mainmap::mouseMoveEvent(QMouseEvent *event)
 {
     QWidget* cW = parentWidget();
-    MainWindow* ui = (MainWindow*)cW->parentWidget();
-    ///ui->MainScene.addLine(50,50,100,100,QPen(Qt::red));
+    MainWindow* MW = (MainWindow*)cW->parentWidget();
+    ///MW->MainScene.addLine(50,50,100,100,QPen(Qt::red));
     if( event->buttons() & Qt::LeftButton ){
-        ;
-        ///QMessageBox::about(this,"MainMap","in_gView"++QString::number(event->x())+" , "+QString::number(event->y()));
+
+        ///update ViewRect in Scene
+        QPoint NowPos(event->pos());
+        QPoint Arr = NowPos - LastPos;
+
+        int NX = MW->ViewRect.x()-Arr.x();
+        int NY = MW->ViewRect.y()-Arr.y();
+
+        NX = std::min(NX,(int)( MW->GridColumnNum   * MW->GridWidth - MW->ViewRect.width() ));
+        NY = std::min(NY,(int)( MW->GridRowNum * MW->GridWidth - MW->ViewRect.height())+20);
+        NX = std::max(NX, -10);///because ( MW->GridRowNum    * MW->GridWidth - MW->ViewRect.width() ) maybe smaller than 0
+        NY = std::max(NY, -10);
+        MW->ViewRect = QRect(NX,NY,MW->ViewRect.width(),MW->ViewRect.height());
+        setSceneRect(MW->ViewRect);
+        LastPos = event->pos();
+        ///QMessageBox::about(this,"MainMap","in_gView"+QString::number(Arr.x())+" , "+QString::number(Arr.y()));
+
+        ///Small Map:
+
     }
 }
 
+void GraphicsView_Mainmap::mousePressEvent(QMouseEvent *event)
+{
+    if( event->button() == Qt::LeftButton){
+        LastPos = event->pos();
+    }
+}

@@ -8,15 +8,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     GridRowNum = -1;
-    GridColumNum = -1;
+    GridColumnNum = -1;
     GridWidth = 40.0;
-    InitGrid(11,11);
+    InitGrid(138,19);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
     ///ui->graphicsView_2->setTransform(QTransform().scale(1/1.05,1/1.05));
 
-    ///ui->graphicsView->setSceneRect(0,0,700,500);
+    int w = ui->graphicsView->width();
+    int h = ui->graphicsView->height();
+    ViewRect = QRect(-10,-10,w-60,h-10);
+    ui->graphicsView->setSceneRect(ViewRect);
     ///ui->graphicsView->mapToScene(0,0,100,100);
     ///ui->graphicsView_2->mapToScene(0,0,GridColumNum*GridWidth,GridRowNum*GridWidth);
     ///ui->graphicsView->setBackgroundBrush(QBrush(Qt::red));
@@ -31,41 +34,41 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::InitGrid(int Rows,int Colums)
+void MainWindow::InitGrid(int Rows,int Columns)
 {
-    if(Rows>=0&&Colums>=0){
+    if(Rows>=0&&Columns>=0){
         GridRowNum = Rows;
-        GridColumNum = Colums;
+        GridColumnNum = Columns;
     }
-    if(GridRowNum<=0||GridColumNum<=0) {
+    if(GridRowNum<=0||GridColumnNum<=0) {
         ///error
         QMessageBox::about(this,"FuncName_InitGrid","No_RowNum_or_Columnum");
         return;
     }
     ///else QMessageBox::about(this,"FuncName_InitGrid","Ok!");
     GridRowNum = std::min(GridRowNum,MAXNUM);
-    GridColumNum = std::min(GridColumNum,MAXNUM);
+    GridColumnNum = std::min(GridColumnNum,MAXNUM);
     MainScene.clear();
     for(int i=0;i<=GridRowNum;i++){
-        MainScene.addLine(0,GridWidth*i,GridWidth*GridColumNum,GridWidth*i,QPen(Qt::white,1.0,Qt::DashLine));
+        MainScene.addLine(0,GridWidth*i,GridWidth*GridColumnNum,GridWidth*i,QPen(Qt::white,1.0,Qt::DashLine));
     }
-    for(int i=0;i<=GridColumNum;i++){
+    for(int i=0;i<=GridColumnNum;i++){
         MainScene.addLine(GridWidth*i,0,GridWidth*i,GridWidth*GridRowNum,QPen(Qt::white,1.0,Qt::DashLine));
     }
 
     SmallScene.clear();
     double w = ui->graphicsView_2->width();
     double h = ui->graphicsView_2->height();
-    double dw = w/GridColumNum;
+    double dw = w/GridColumnNum;
     double dh = h/GridRowNum;
     double dd = std::min(dw,dh) / 1.05;
 
     SmallGridWidth = dd;
-    MainToSmallDx = ( w - dd*GridColumNum )/2;
+    MainToSmallDx = ( w - dd*GridColumnNum )/2;
     MainToSmallDy = ( h - dd*GridRowNum   )/2;
     MainToSmallD  = dd/GridWidth;
 
-    double L = MainToSmallDx, R = MainToSmallDx+GridColumNum*dd;
+    double L = MainToSmallDx, R = MainToSmallDx+GridColumnNum*dd;
     double U = MainToSmallDy, D = MainToSmallDy+GridRowNum*dd;
     SmallScene.addLine(L,U,R,U,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(L,D,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
