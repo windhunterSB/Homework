@@ -267,7 +267,7 @@
    <widget class="QSlider" name="verticalSlider">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>16</x>
       <y>50</y>
       <width>19</width>
       <height>160</height>
@@ -277,7 +277,7 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QGraphicsView" name="graphicsView_2">
+   <widget class="GraphicsView_Smallmap" name="graphicsView_2">
     <property name="geometry">
      <rect>
       <x>570</x>
@@ -628,7 +628,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>16</x>
       <y>20</y>
       <width>21</width>
       <height>21</height>
@@ -683,7 +683,7 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>24</x>
+      <x>20</x>
       <y>220</y>
       <width>10</width>
       <height>31</height>
@@ -1120,6 +1120,11 @@
    <class>GraphicsView_Mainmap</class>
    <extends>QGraphicsView</extends>
    <header>graphicsview_mainmap.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GraphicsView_Smallmap</class>
+   <extends>QGraphicsView</extends>
+   <header>graphicsview_smallmap.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

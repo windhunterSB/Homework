@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    graphicsview_mainmap.cpp
+    graphicsview_mainmap.cpp \
+    graphicsview_smallmap.cpp
 
 HEADERS  += mainwindow.h \
-    graphicsview_mainmap.h
+    graphicsview_mainmap.h \
+    graphicsview_smallmap.h
 
 FORMS    += mainwindow.ui
 

@@ -17,6 +17,8 @@ public:
     ~MainWindow();
 
     void InitGrid(int Rows=-1,int Columns=-1);
+    void ChangeView(qreal x,qreal y,qreal w,qreal h);
+    ///void ChangeView(const QPoint &center,double Ki);///Rect center and zoom size
 
 public:
     Ui::MainWindow *ui;

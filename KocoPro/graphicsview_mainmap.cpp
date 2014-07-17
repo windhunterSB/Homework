@@ -22,20 +22,10 @@ void GraphicsView_Mainmap::mouseMoveEvent(QMouseEvent *event)
 
         int NX = MW->ViewRect.x()-Arr.x();
         int NY = MW->ViewRect.y()-Arr.y();
+        MW->ChangeView(NX,NY,MW->ViewRect.width(),MW->ViewRect.height());
 
-        NX = std::min(NX,(int)( MW->GridColumnNum   * MW->GridWidth - MW->ViewRect.width() ));
-        NY = std::min(NY,(int)( MW->GridRowNum * MW->GridWidth - MW->ViewRect.height())+20);
-        NX = std::max(NX, -10);///because ( MW->GridRowNum    * MW->GridWidth - MW->ViewRect.width() ) maybe smaller than 0
-        NY = std::max(NY, -10);
-        MW->ViewRect = QRect(NX,NY,MW->ViewRect.width(),MW->ViewRect.height());
-        setSceneRect(MW->ViewRect);
         LastPos = event->pos();
         ///QMessageBox::about(this,"MainMap","in_gView"+QString::number(Arr.x())+" , "+QString::number(Arr.y()));
-
-        ///Small Map:
-        double DK = MW->GridWidth / MW->SmallGridWidth;
-        MW->SmallViewRect->setRect((NX+10)/DK + MW->MainToSmallDx,(NY+10)/DK + MW->MainToSmallDy,
-                                   (MW->ViewRect.width()-30)/DK,(MW->ViewRect.height()-10)/DK);
     }
 }
 

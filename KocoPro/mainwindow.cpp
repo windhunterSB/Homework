@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
+#include <QGraphicsItem>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     GridRowNum = -1;
     GridColumnNum = -1;
     GridWidth = 40.0;
-    InitGrid(64,80);
+    InitGrid(32,40);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -18,10 +19,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     int w = ui->graphicsView->width();
     int h = ui->graphicsView->height();
-    ViewRect = QRect(-10,-10,w-60,h-10);
-    ui->graphicsView->setSceneRect(ViewRect);
 
-    SmallViewRect = SmallScene.addRect(MainToSmallDx,MainToSmallDy,(w-30)/GridWidth*SmallGridWidth,(h-10)/GridWidth*SmallGridWidth,QPen(Qt::red));
+    ///ViewRect cannot be NULL
+    SmallViewRect = SmallScene.addRect(MainToSmallDx,MainToSmallDy,(w-30)/GridWidth*SmallGridWidth,(h-20)/GridWidth*SmallGridWidth,QPen(Qt::red));
+
+    ChangeView(-10,-10,w-60,h-10);
+
     ///ui->graphicsView->mapToScene(0,0,100,100);
     ///ui->graphicsView_2->mapToScene(0,0,GridColumNum*GridWidth,GridRowNum*GridWidth);
     ///ui->graphicsView->setBackgroundBrush(QBrush(Qt::red));
@@ -77,15 +80,27 @@ void MainWindow::InitGrid(int Rows,int Columns)
     SmallScene.addLine(L,U,L,D,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(R,U,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
 
+    ui->graphicsView_2->SceneRect = QRect(L,U,R-L,D-U);
+
 }
-/*
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
+
+void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
 {
-    QRect gViewRect = QRect(ui->graphicsView->pos() + ui->centralWidget->pos(),ui->graphicsView->size());///graphicsView's position
-    if(gViewRect.contains(event->pos()) && (event->button()==Qt::LeftButton))
-    {
-        QMessageBox::about(this,"MouseMoveEvent","in_gView");
-    }
-    else QMessageBox::about(this,"MouseMoveEvent","out_gView : "+QString::number(event->x())+" , "+QString::number(event->y()));
+    double Ki = h / (ui->graphicsView->height()-10 ) ;
+
+    x = std::min(x,(qreal)( GridColumnNum   * GridWidth - w ));
+    y = std::min(y,(qreal)( GridRowNum * GridWidth - h)+5);
+    x = std::max(x, (qreal)-20);///because ( MW->GridRowNum    * MW->GridWidth - MW->ViewRect.width() ) maybe smaller than 0
+    y = std::max(y, (qreal)-20);
+
+    ///Main map:
+    ViewRect = QRect(x,y,w,h);
+    ui->graphicsView->setSceneRect(ViewRect);
+    ui->graphicsView->resetTransform();
+    ui->graphicsView->setTransform(QTransform().scale(1/Ki,1/Ki));
+
+    ///Small map:
+    double DK = GridWidth / SmallGridWidth;
+    SmallViewRect->setRect((x+20)/DK + MainToSmallDx,(y+20)/DK + MainToSmallDy,
+                               (w-25)/DK*Ki,(h-20)/DK*Ki);
 }
-*/
