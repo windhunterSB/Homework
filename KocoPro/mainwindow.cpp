@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     GridRowNum = -1;
     GridColumnNum = -1;
     GridWidth = 40.0;
-    InitGrid(138,19);
+    InitGrid(64,80);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     int h = ui->graphicsView->height();
     ViewRect = QRect(-10,-10,w-60,h-10);
     ui->graphicsView->setSceneRect(ViewRect);
+
+    SmallViewRect = SmallScene.addRect(MainToSmallDx,MainToSmallDy,(w-30)/GridWidth*SmallGridWidth,(h-10)/GridWidth*SmallGridWidth,QPen(Qt::red));
     ///ui->graphicsView->mapToScene(0,0,100,100);
     ///ui->graphicsView_2->mapToScene(0,0,GridColumNum*GridWidth,GridRowNum*GridWidth);
     ///ui->graphicsView->setBackgroundBrush(QBrush(Qt::red));
@@ -74,6 +76,7 @@ void MainWindow::InitGrid(int Rows,int Columns)
     SmallScene.addLine(L,D,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(L,U,L,D,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(R,U,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
+
 }
 /*
 void MainWindow::mouseMoveEvent(QMouseEvent *event)

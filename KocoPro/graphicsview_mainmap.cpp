@@ -1,5 +1,6 @@
 #include "graphicsview_mainmap.h"
 #include <QMessageBox>
+#include <QGraphicsItem>
 #include "ui_mainwindow.h"
 #include "mainwindow.h"
 
@@ -32,7 +33,9 @@ void GraphicsView_Mainmap::mouseMoveEvent(QMouseEvent *event)
         ///QMessageBox::about(this,"MainMap","in_gView"+QString::number(Arr.x())+" , "+QString::number(Arr.y()));
 
         ///Small Map:
-
+        double DK = MW->GridWidth / MW->SmallGridWidth;
+        MW->SmallViewRect->setRect((NX+10)/DK + MW->MainToSmallDx,(NY+10)/DK + MW->MainToSmallDy,
+                                   (MW->ViewRect.width()-30)/DK,(MW->ViewRect.height()-10)/DK);
     }
 }
 

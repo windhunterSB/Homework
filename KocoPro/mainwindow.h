@@ -26,8 +26,9 @@ public:
     static const int MAXNUM = 256;///THE MAXNUM OF GridRowNum,GridColumNum
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
-    QRect ViewRect;
 
+    QRect ViewRect;
+    QGraphicsRectItem* SmallViewRect;
 };
 
 #endif // MAINWINDOW_H
