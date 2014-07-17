@@ -93,7 +93,7 @@ void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
     double Ki = h / (ui->graphicsView->height()-10 ) ;
 
     x = std::min(x,(qreal)( GridColumnNum   * GridWidth - w ));
-    y = std::min(y,(qreal)( GridRowNum * GridWidth - h)+5);
+    y = std::min(y,(qreal)( GridRowNum * GridWidth - h)+20);
     x = std::max(x, (qreal)-20);///because ( MW->GridRowNum    * MW->GridWidth - MW->ViewRect.width() ) maybe smaller than 0
     y = std::max(y, (qreal)-20);
 
