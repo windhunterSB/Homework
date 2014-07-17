@@ -35,3 +35,10 @@ void GraphicsView_Mainmap::mousePressEvent(QMouseEvent *event)
         LastPos = event->pos();
     }
 }
+
+void GraphicsView_Mainmap::wheelEvent(QWheelEvent *event)
+{
+    QWidget* cW = parentWidget();
+    MainWindow* MW = (MainWindow*)cW->parentWidget();
+    QApplication::sendEvent(MW->ui->verticalSlider,event);
+}

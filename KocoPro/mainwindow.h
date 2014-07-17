@@ -18,7 +18,6 @@ public:
 
     void InitGrid(int Rows=-1,int Columns=-1);
     void ChangeView(qreal x,qreal y,qreal w,qreal h);
-    ///void ChangeView(const QPoint &center,double Ki);///Rect center and zoom size
 
 public:
     Ui::MainWindow *ui;
@@ -31,6 +30,8 @@ public:
 
     QRect ViewRect;
     QGraphicsRectItem* SmallViewRect;
+public slots:
+    void ReSizeView(int value);///zoom size Ki = value/100
 };
 
 #endif // MAINWINDOW_H

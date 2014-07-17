@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     GridRowNum = -1;
     GridColumnNum = -1;
     GridWidth = 40.0;
-    InitGrid(32,40);
+    InitGrid(40,60);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -24,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
     SmallViewRect = SmallScene.addRect(MainToSmallDx,MainToSmallDy,(w-30)/GridWidth*SmallGridWidth,(h-20)/GridWidth*SmallGridWidth,QPen(Qt::red));
 
     ChangeView(-10,-10,w-60,h-10);
+
+    ///After ViewRect is created, we can do this
+    connect(ui->verticalSlider,SIGNAL(valueChanged(int)),this,SLOT(ReSizeView(int)));
 
     ///ui->graphicsView->mapToScene(0,0,100,100);
     ///ui->graphicsView_2->mapToScene(0,0,GridColumNum*GridWidth,GridRowNum*GridWidth);
@@ -81,6 +84,7 @@ void MainWindow::InitGrid(int Rows,int Columns)
     SmallScene.addLine(R,U,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
 
     ui->graphicsView_2->SceneRect = QRect(L,U,R-L,D-U);
+    ui->graphicsView_2->setSceneRect(QRect(L,U,R-L,D-U));
 
 }
 
@@ -102,5 +106,31 @@ void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
     ///Small map:
     double DK = GridWidth / SmallGridWidth;
     SmallViewRect->setRect((x+20)/DK + MainToSmallDx,(y+20)/DK + MainToSmallDy,
-                               (w-25)/DK*Ki,(h-20)/DK*Ki);
+                               (w-25)/DK,(h-20)/DK);
+}
+
+void MainWindow::ReSizeView(int value)
+{
+
+    double Ki  = (double)value/200.0;
+    qreal nx,ny,nw,nh;
+    try
+    {
+        nx = ViewRect.x();
+        ny = ViewRect.y();
+        nw = ViewRect.width();
+        nh = ViewRect.height();
+
+        Ki *= nh / (ui->graphicsView->height()-10 ) ;
+
+        nx = nx + nw/2 - nw/2/Ki;
+        ny = ny + nh/2 - nh/2/Ki;
+        nw /= Ki;
+        nh /= Ki;
+        ChangeView(nx,ny,nw,nh);
+    }
+    catch(...)
+    {
+        return;
+    }
 }

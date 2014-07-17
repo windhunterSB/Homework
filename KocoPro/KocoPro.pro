@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     graphicsview_mainmap.cpp \
-    graphicsview_smallmap.cpp
+    graphicsview_smallmap.cpp \
+    slider_viewsize.cpp
 
 HEADERS  += mainwindow.h \
     graphicsview_mainmap.h \
-    graphicsview_smallmap.h
+    graphicsview_smallmap.h \
+    slider_viewsize.h
 
 FORMS    += mainwindow.ui
 

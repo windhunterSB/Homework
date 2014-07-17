@@ -25,3 +25,10 @@ void GraphicsView_Smallmap::mousePressEvent(QMouseEvent *event)
         ///QMessageBox::about(this,"SmallMap","in_gView"+QString::number(POS.x())+" , "+QString::number(POS.y()));
     }
 }
+
+void GraphicsView_Smallmap::wheelEvent(QWheelEvent *event)
+{
+    QWidget* cW = parentWidget();
+    MainWindow* MW = (MainWindow*)cW->parentWidget();
+    QApplication::sendEvent(MW->ui->verticalSlider,event);
+}
