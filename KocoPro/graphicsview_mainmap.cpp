@@ -20,8 +20,8 @@ void GraphicsView_Mainmap::mouseMoveEvent(QMouseEvent *event)
         QPoint NowPos(event->pos());
         QPoint Arr = NowPos - LastPos;
 
-        int NX = MW->ViewRect.x()-Arr.x();
-        int NY = MW->ViewRect.y()-Arr.y();
+        int NX = MW->ViewRect.x()-Arr.x()*MW->Zoom;
+        int NY = MW->ViewRect.y()-Arr.y()*MW->Zoom;
         MW->ChangeView(NX,NY,MW->ViewRect.width(),MW->ViewRect.height());
 
         LastPos = event->pos();

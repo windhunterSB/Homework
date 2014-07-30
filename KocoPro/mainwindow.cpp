@@ -8,10 +8,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    Data.clear();
     GridRowNum = -1;
     GridColumnNum = -1;
     GridWidth = 40.0;
-    InitGrid(40,60);
+    Zoom = 1.0;
+    InitGrid(80,120,30,20);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -35,6 +37,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ///MainScene.addLine(150,0,0,150,QPen(Qt::red,3));
     ///MainScene.addRect(100,0,100,100,QPen(Qt::blue,3),QBrush(Qt::yellow));
     ///MainScene.addRect(200,200,500,500,QPen(Qt::red,3),QBrush(Qt::yellow));
+
+    AddSegment(Segment(QPointF(0,0),QPoint(50,10)));
+    //Segment Test1(QPointF(0,0),QPoint(50,10));
+    AddSegment(Segment(QPointF(50,10),QPoint(40,-10)));
+    AddSegment(Segment(QPointF(40,-10),QPoint(0,0)));
+
+    AddSegment(Segment(QPointF(-20,0),QPoint(70,50)));
 }
 
 MainWindow::~MainWindow()
@@ -42,8 +51,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::InitGrid(int Rows,int Columns)
+void MainWindow::InitGrid(int Rows,int Columns,int ox,int oy)
 {
+    Data.clear();
     if(Rows>=0&&Columns>=0){
         GridRowNum = Rows;
         GridColumnNum = Columns;
@@ -63,6 +73,9 @@ void MainWindow::InitGrid(int Rows,int Columns)
     for(int i=0;i<=GridColumnNum;i++){
         MainScene.addLine(GridWidth*i,0,GridWidth*i,GridWidth*GridRowNum,QPen(Qt::white,1.0,Qt::DashLine));
     }
+    oX=ox;oY=oy;
+    MainScene.addLine(0,GridWidth*(GridRowNum-oY),GridWidth*GridColumnNum,GridWidth*(GridRowNum-oY),QPen(Qt::white,3.0,Qt::SolidLine));
+    MainScene.addLine(GridWidth*oX,0,GridWidth*oX,GridWidth*GridRowNum,QPen(Qt::white,3.0,Qt::SolidLine));
 
     SmallScene.clear();
     double w = ui->graphicsView_2->width();
@@ -82,6 +95,9 @@ void MainWindow::InitGrid(int Rows,int Columns)
     SmallScene.addLine(L,D,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(L,U,L,D,QPen(Qt::white,1.0,Qt::SolidLine));
     SmallScene.addLine(R,U,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
+
+    SmallScene.addLine(L,U+(GridRowNum-oY)*dd,R,U+(GridRowNum-oY)*dd,QPen(Qt::white,1.0,Qt::SolidLine));
+    SmallScene.addLine(L+oX*dd,U,L+oX*dd,D,QPen(Qt::white,1.0,Qt::SolidLine));
 
     ui->graphicsView_2->SceneRect = QRect(L,U,R-L,D-U);
     ui->graphicsView_2->setSceneRect(QRect(L,U,R-L,D-U));
@@ -111,8 +127,8 @@ void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
 
 void MainWindow::ReSizeView(int value)
 {
-
     double Ki  = (double)value/200.0;
+    Zoom = 1.0/Ki;
     qreal nx,ny,nw,nh;
     try
     {
@@ -133,4 +149,52 @@ void MainWindow::ReSizeView(int value)
     {
         return;
     }
+}
+
+QPointF MainWindow::MainMapchangeXY(double x,double y)///将坐标点，转变为大地图中的点
+{
+    double xx = (x+oX)*GridWidth;
+    double yy = ((double)GridRowNum - y-oY)*GridWidth;
+    return QPointF(xx,yy);
+}
+
+QPointF MainWindow::SmallMapchangeXY(double x,double y)
+{
+    double xx = (x+oX)*SmallGridWidth + MainToSmallDx;
+    double yy = ((double)GridRowNum - y-oY)*SmallGridWidth + MainToSmallDy ;
+    return QPointF(xx,yy);
+}
+
+void MainWindow::AddSegment(Segment NewNode)
+{
+    Data.AddSegment(NewNode);
+    SegmentLineItem MainItem,SmallItem;
+
+    if(NewNode.Lab=='L')
+    {
+        QPointF S = MainMapchangeXY(NewNode.Start.x(),NewNode.Start.y()),E = MainMapchangeXY(NewNode.End.x(),NewNode.End.y());
+        MainItem.RealLine = MainScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(0,162,232),5.0,Qt::SolidLine));
+        S = SmallMapchangeXY(NewNode.Start.x(),NewNode.Start.y()),E = SmallMapchangeXY(NewNode.End.x(),NewNode.End.y());
+        SmallItem.RealLine = SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(0,162,232),1.0,Qt::SolidLine));
+        int pos = (int)Data.PathPoint.size() - 1;
+        int siz = (int)Data.PathPoint[pos].size() -1;
+        for(int i=0;i<siz;i++)
+        {
+            S = MainMapchangeXY(Data.PathPoint[pos][i].x()  ,Data.PathPoint[pos][i].y());
+            E = MainMapchangeXY(Data.PathPoint[pos][i+1].x(),Data.PathPoint[pos][i+1].y());
+            //MainItem.RealLine =
+                    MainScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),4.0,Qt::SolidLine));
+            S = SmallMapchangeXY(Data.PathPoint[pos][i].x()  ,Data.PathPoint[pos][i].y());
+            E = SmallMapchangeXY(Data.PathPoint[pos][i+1].x(),Data.PathPoint[pos][i+1].y());
+            //SmallItem.RealLine =
+                    SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),1.0,Qt::SolidLine));
+        }
+    }
+    else
+    {
+        ;
+    }
+
+    Data.MainMapLinesItem.push_back(MainItem);
+    Data.SmallMapLinesItem.push_back(SmallItem);
 }
