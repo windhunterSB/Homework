@@ -9,12 +9,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    TextHighLightFinished=true;
     Data.clear();
     GridRowNum = -1;
     GridColumnNum = -1;
     GridWidth = 40.0;
     Zoom = 1.0;
-    InitGrid(400,400,200,200);
+    InitGrid(20,20,10,10);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -45,12 +46,14 @@ MainWindow::MainWindow(QWidget *parent) :
     //AddSegment(Segment(QPointF(40,-10),QPointF(0,0)));
     //AddSegment(Segment(QPointF(-20,0),QPointF(70,50)));
     ///Circle:Test
-    AddSegment(Segment(QPointF(5,0),QPointF(0,5),QPointF(0,0),'U'));
-    AddSegment(Segment(QPointF(0,10),QPointF(0,-10),QPointF(0,0),'U'));
-    AddSegment(Segment(QPointF(0,15),QPointF(0,-15),QPointF(0,0),'C'));
-    AddSegment(Segment(QPointF(12,-16),QPointF(-16,12),QPointF(0,0),'U'));
-    AddSegment(Segment(QPointF(24,-32),QPointF(-32,24),QPointF(0,0),'C'));
-    AddSegment(Segment(QPointF(54,-62),QPointF(-62,54),QPointF(30,30),'U'));
+    //AddSegment(Segment(QPointF(5,0),QPointF(0,5),QPointF(0,0),'U'));
+    //AddSegment(Segment(QPointF(0,10),QPointF(0,-10),QPointF(0,0),'U'));
+    //AddSegment(Segment(QPointF(0,15),QPointF(0,-15),QPointF(0,0),'C'));
+    //AddSegment(Segment(QPointF(-20,-20),QPointF(12,-16)));
+    //AddSegment(Segment(QPointF(12,-16),QPointF(-16,12),QPointF(0,0),'U'));
+    //AddSegment(Segment(QPointF(-16,12),QPointF(-20,-20)));
+    //AddSegment(Segment(QPointF(24,-32),QPointF(-32,24),QPointF(0,0),'C'));
+    //AddSegment(Segment(QPointF(54,-62),QPointF(-62,54),QPointF(30,30),'U'));
 }
 
 MainWindow::~MainWindow()
@@ -298,4 +301,52 @@ void MainWindow::AddSegment(Segment NewNode)
 
     Data.MainMapLinesItem.push_back(MainItem);
     Data.SmallMapLinesItem.push_back(SmallItem);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    //QMessageBox::about(this,"hehe","clicked");
+
+    //QTextDocument* Doc = ui->plainTextEdit->document();
+    //for(QTextBlock bk = Doc->begin();bk!=Doc->end();bk=bk.next())///取出每一行,以\n为分割
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+
+}
+
+void MainWindow::DealText()
+{
+    QTextDocument* Doc = ui->plainTextEdit->document();
+    QTextCursor Cursor(Doc);
+    QTextCharFormat plainFormat(Cursor.charFormat());
+    QTextCharFormat colorFormat = plainFormat;
+    colorFormat.setForeground(QColor(0,162,232));
+    plainFormat.setForeground(QColor(231,231,231));
+
+    Cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
+    Cursor.mergeCharFormat(plainFormat);
+    QString stset[5] = {"for","double","case","int"};
+    for(int i=0;i<4;i++){
+        QTextCursor highlightCursor(Doc);
+        while (!highlightCursor.isNull() && !highlightCursor.atEnd())
+        {
+            highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords);
+
+            if (!highlightCursor.isNull()) {
+                //highlightCursor.movePosition(QTextCursor::WordRight,QTextCursor::KeepAnchor);//会产生abc::连带“：：”也被选中的情况
+                //highlightCursor.movePosition(QTextCursor::NextCharacter,QTextCursor::KeepAnchor,0);//不加也行
+                highlightCursor.mergeCharFormat(colorFormat);
+            }
+        }
+    }
+    TextHighLightFinished=true;
+}
+
+
+void MainWindow::on_plainTextEdit_textChanged()
+///文本改变时发生
+{
+    if(TextHighLightFinished) {TextHighLightFinished=false;DealText();}
 }

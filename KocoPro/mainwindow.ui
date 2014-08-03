@@ -114,7 +114,7 @@
       <x>10</x>
       <y>10</y>
       <width>641</width>
-      <height>515</height>
+      <height>520</height>
      </rect>
     </property>
     <property name="palette">
@@ -251,19 +251,6 @@
      </brush>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>530</y>
-      <width>641</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
    <widget class="Slider_Viewsize" name="verticalSlider">
     <property name="geometry">
      <rect>
@@ -387,9 +374,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>550</y>
+      <y>540</y>
       <width>421</width>
-      <height>241</height>
+      <height>253</height>
      </rect>
     </property>
     <property name="palette">
@@ -466,9 +453,9 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>550</y>
+      <y>540</y>
       <width>221</width>
-      <height>81</height>
+      <height>85</height>
      </rect>
     </property>
     <property name="font">
@@ -493,9 +480,9 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>630</y>
+      <y>625</y>
       <width>221</width>
-      <height>81</height>
+      <height>85</height>
      </rect>
     </property>
     <property name="font">
@@ -522,7 +509,7 @@
       <x>430</x>
       <y>710</y>
       <width>221</width>
-      <height>81</height>
+      <height>85</height>
      </rect>
     </property>
     <property name="font">
@@ -785,8 +772,54 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QGraphicsView" name="graphicsView_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>530</y>
+      <width>641</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="Base">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>33</red>
+          <green>33</green>
+          <blue>33</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="Base">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>33</red>
+          <green>33</green>
+          <blue>33</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="Base">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>75</red>
+          <green>75</green>
+          <blue>75</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+   </widget>
    <zorder>graphicsView</zorder>
-   <zorder>horizontalSlider</zorder>
    <zorder>verticalSlider</zorder>
    <zorder>graphicsView_2</zorder>
    <zorder>graphicsView_4</zorder>
@@ -798,6 +831,7 @@
    <zorder>label_3</zorder>
    <zorder>plainTextEdit_2</zorder>
    <zorder>label_6</zorder>
+   <zorder>graphicsView_3</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
