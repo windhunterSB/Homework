@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <vector>
 #include <QGraphicsScene>
+#include <QtDebug>
 
 using namespace std;
 
@@ -51,6 +52,7 @@ private:
     void __init__();
     void SetBitsN(int bN);
     void DDALineFunc(Segment& Seg,vector<QPoint>& Path,vector<QPoint>& Arr,SegmentTable& table);
+    void DDACircleFunc(Segment& Seg,vector<QPoint>& Path,vector<QPoint>& Arr,SegmentTable& table);
 public:
     int bitsN;
     vector<Segment> RealPath;

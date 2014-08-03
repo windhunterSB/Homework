@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QtDebug>
 #include "dataandalgorithm.h"
 namespace Ui {
 class MainWindow;
@@ -28,7 +29,7 @@ public:
     int GridRowNum,GridColumnNum;
     double GridWidth,SmallGridWidth;
     double MainToSmallDx,MainToSmallDy,MainToSmallD;
-    static const int MAXNUM = 250;///THE MAXNUM OF GridRowNum,GridColumNum
+    static const int MAXNUM = 1000;///THE MAXNUM OF GridRowNum,GridColumNum
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
 

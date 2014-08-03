@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QGraphicsItem>
+#include <cmath>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     GridColumnNum = -1;
     GridWidth = 40.0;
     Zoom = 1.0;
-    InitGrid(80,120,30,20);
+    InitGrid(400,400,200,200);
 
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -38,12 +39,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ///MainScene.addRect(100,0,100,100,QPen(Qt::blue,3),QBrush(Qt::yellow));
     ///MainScene.addRect(200,200,500,500,QPen(Qt::red,3),QBrush(Qt::yellow));
 
-    AddSegment(Segment(QPointF(0,0),QPoint(50,10)));
-    //Segment Test1(QPointF(0,0),QPoint(50,10));
-    AddSegment(Segment(QPointF(50,10),QPoint(40,-10)));
-    AddSegment(Segment(QPointF(40,-10),QPoint(0,0)));
-
-    AddSegment(Segment(QPointF(-20,0),QPoint(70,50)));
+    ///Line:Test
+    //AddSegment(Segment(QPointF(0,0),QPointF(50,10)));
+    //AddSegment(Segment(QPointF(50,10),QPointF(40,-10)));
+    //AddSegment(Segment(QPointF(40,-10),QPointF(0,0)));
+    //AddSegment(Segment(QPointF(-20,0),QPointF(70,50)));
+    ///Circle:Test
+    AddSegment(Segment(QPointF(5,0),QPointF(0,5),QPointF(0,0),'U'));
+    AddSegment(Segment(QPointF(0,10),QPointF(0,-10),QPointF(0,0),'U'));
+    AddSegment(Segment(QPointF(0,15),QPointF(0,-15),QPointF(0,0),'C'));
+    AddSegment(Segment(QPointF(12,-16),QPointF(-16,12),QPointF(0,0),'U'));
+    AddSegment(Segment(QPointF(24,-32),QPointF(-32,24),QPointF(0,0),'C'));
+    AddSegment(Segment(QPointF(54,-62),QPointF(-62,54),QPointF(30,30),'U'));
 }
 
 MainWindow::~MainWindow()
@@ -167,11 +174,11 @@ QPointF MainWindow::SmallMapchangeXY(double x,double y)
 
 void MainWindow::AddSegment(Segment NewNode)
 {
-    Data.AddSegment(NewNode);
     SegmentLineItem MainItem,SmallItem;
 
     if(NewNode.Lab=='L')
     {
+        Data.AddSegment(NewNode);
         QPointF S = MainMapchangeXY(NewNode.Start.x(),NewNode.Start.y()),E = MainMapchangeXY(NewNode.End.x(),NewNode.End.y());
         MainItem.RealLine = MainScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(0,162,232),5.0,Qt::SolidLine));
         S = SmallMapchangeXY(NewNode.Start.x(),NewNode.Start.y()),E = SmallMapchangeXY(NewNode.End.x(),NewNode.End.y());
@@ -182,17 +189,111 @@ void MainWindow::AddSegment(Segment NewNode)
         {
             S = MainMapchangeXY(Data.PathPoint[pos][i].x()  ,Data.PathPoint[pos][i].y());
             E = MainMapchangeXY(Data.PathPoint[pos][i+1].x(),Data.PathPoint[pos][i+1].y());
-            //MainItem.RealLine =
-                    MainScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),4.0,Qt::SolidLine));
+            QGraphicsItem* Maintmp = MainScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),4.0,Qt::SolidLine));
+            MainItem.CaluLine.push_back(Maintmp);
             S = SmallMapchangeXY(Data.PathPoint[pos][i].x()  ,Data.PathPoint[pos][i].y());
             E = SmallMapchangeXY(Data.PathPoint[pos][i+1].x(),Data.PathPoint[pos][i+1].y());
-            //SmallItem.RealLine =
-                    SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),1.0,Qt::SolidLine));
+            QGraphicsItem* Smalltmp = SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),1.0,Qt::SolidLine));
+            SmallItem.CaluLine.push_back(Smalltmp);
         }
     }
     else
     {
-        ;
+        ///象限检测+分割
+        QPointF SS = NewNode.Start-NewNode.Center,EE = NewNode.End-NewNode.Center;
+        double thetaS=atan2(SS.y(),SS.x());
+        double thetaE=atan2(EE.y(),EE.x());
+        double pi = acos(-1.0);
+        double eps = 1e-6;
+        double R = sqrt(SS.x()*SS.x()+SS.y()*SS.y());
+        vector<Segment> CirVec;
+        if(NewNode.Arr=='U')
+        {
+            if(thetaS-thetaE>-eps)///过180度边界
+                thetaE+=2*pi;
+            for(int id=-2;id<8;id++)
+            {
+                double cut1 = pi/2*(double)id;
+                double cut2 = pi/2*(double)(id+1);
+                cut1 = std::max(cut1,thetaS);
+                cut2 = std::min(cut2,thetaE);
+                if(cut1+eps<cut2)
+                {
+                    Segment NewSeg = NewNode;
+                    NewSeg.Start = QPointF(cos(cut1)*R,sin(cut1)*R)+NewNode.Center;
+                    NewSeg.End   = QPointF(cos(cut2)*R,sin(cut2)*R)+NewNode.Center;
+                    CirVec.push_back(NewSeg);
+                }
+            }
+        }
+        else
+        {
+            if(thetaE-thetaS>-eps)///过180度边界
+                thetaS+=2*pi;
+            for(int id=7;id>=-2;id--)
+            {
+                double cut1 = pi/2*(double)id;
+                double cut2 = pi/2*(double)(id+1);
+                cut1 = std::max(cut1,thetaE);
+                cut2 = std::min(cut2,thetaS);
+                if(cut1+eps<cut2)
+                {
+                    Segment NewSeg = NewNode;
+                    NewSeg.Start = QPointF(cos(cut2)*R,sin(cut2)*R)+NewNode.Center;
+                    NewSeg.End   = QPointF(cos(cut1)*R,sin(cut1)*R)+NewNode.Center;
+                    CirVec.push_back(NewSeg);
+                }
+            }
+        }
+
+        for(int i=0;i<(int)CirVec.size();i++)
+        {
+
+            Data.AddSegment(CirVec[i]);
+            SS = CirVec[i].Start-CirVec[i].Center;
+            EE = CirVec[i].End - CirVec[i].Center;
+            double tS=0 - atan2(SS.y(),SS.x())/pi*180;
+            double tE=0 - atan2(EE.y(),EE.x())/pi*180;
+            double Sweep = 0;
+            if(NewNode.Arr=='U') std::swap(tS,tE);
+            if(tE<tS-eps) tE+=360;
+            Sweep = tE - tS;
+            if(tS<0) tS+=360;
+            QPainterPath MainPath,SmallPath;
+            QPointF LU = NewNode.Center - QPointF(R,R),RD = NewNode.Center + QPointF(R,R);
+            QPointF StartP=NewNode.Arr=='U'?MainMapchangeXY(CirVec[i].End.x(),CirVec[i].End.y()):MainMapchangeXY(CirVec[i].Start.x(),CirVec[i].Start.y());
+            MainPath.moveTo(StartP);
+            QPointF MainLU = MainMapchangeXY(LU.x(),LU.y()),MainRD = MainMapchangeXY(RD.x(),RD.y());
+            MainPath.arcTo(MainLU.x(),MainLU.y(),MainRD.x()-MainLU.x(),MainRD.y()-MainLU.y(),tS,Sweep);
+            //qDebug()<<MainLU.x()<<" "<<MainLU.y()<<" "<<MainRD.x()-MainLU.x()<<" "<<MainRD.y()-MainLU.y()<<" | "<<tS<<" "<<Sweep<<"\n";
+            //MainPath.moveTo(55+cos(atan2(SS.y(),SS.x())*45),55+sin(atan2(SS.y(),SS.x()))*45);
+            //MainPath.arcTo((qreal)10,(qreal)10,(qreal)100,(qreal)100,(qreal)tS,(qreal)Sweep);
+            MainItem.RealLine = MainScene.addPath(MainPath,QPen(QColor(0,162,232),5.0,Qt::SolidLine));
+
+            QPointF SmallLU = SmallMapchangeXY(LU.x(),LU.y()),SmallRD = SmallMapchangeXY(RD.x(),RD.y());
+            StartP=NewNode.Arr=='U'?SmallMapchangeXY(CirVec[i].End.x(),CirVec[i].End.y()):SmallMapchangeXY(CirVec[i].Start.x(),CirVec[i].Start.y());
+            SmallPath.moveTo(StartP);
+            SmallPath.arcTo(SmallLU.x(),SmallLU.y(),SmallRD.x()-SmallLU.x(),SmallRD.y()-SmallLU.y(),tS,Sweep);
+            SmallItem.RealLine = SmallScene.addPath(SmallPath,QPen(QColor(0,162,232),1.0,Qt::SolidLine));
+
+            int pos = (int)Data.PathPoint.size() - 1;
+            int siz = (int)Data.PathPoint[pos].size() -1;
+            QPointF S,E;
+
+            for(int i=0;i<siz;i++)
+            {
+                S = MainMapchangeXY(Data.PathPoint[pos][i].x()  ,Data.PathPoint[pos][i].y());
+                E = MainMapchangeXY(Data.PathPoint[pos][i+1].x(),Data.PathPoint[pos][i+1].y());
+                QGraphicsItem* Maintmp = MainScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),4.0,Qt::SolidLine));
+                MainItem.CaluLine.push_back(Maintmp);
+                S = SmallMapchangeXY(Data.PathPoint[pos][i].x()  ,Data.PathPoint[pos][i].y());
+                E = SmallMapchangeXY(Data.PathPoint[pos][i+1].x(),Data.PathPoint[pos][i+1].y());
+                QGraphicsItem* Smalltmp = SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),1.0,Qt::SolidLine));
+                SmallItem.CaluLine.push_back(Smalltmp);
+            }
+
+        }
+
     }
 
     Data.MainMapLinesItem.push_back(MainItem);
