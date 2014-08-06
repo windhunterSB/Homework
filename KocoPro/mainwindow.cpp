@@ -10,13 +10,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     TextHighLightFinished=true;
+    GridInitFinished=false;
     Data.clear();
     GridRowNum = -1;
     GridColumnNum = -1;
     GridWidth = 40.0;
     Zoom = 1.0;
     InitGrid(20,20,10,10);
-
+/*
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
     ///ui->graphicsView_2->setTransform(QTransform().scale(1/1.05,1/1.05));
@@ -28,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     SmallViewRect = SmallScene.addRect(MainToSmallDx,MainToSmallDy,(w-30)/GridWidth*SmallGridWidth,(h-20)/GridWidth*SmallGridWidth,QPen(Qt::red));
 
     ChangeView(-10,-10,w-60,h-10);
-
+*/
     ///After ViewRect is created, we can do this
     connect(ui->verticalSlider,SIGNAL(valueChanged(int)),this,SLOT(ReSizeView(int)));
 
@@ -63,7 +64,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::InitGrid(int Rows,int Columns,int ox,int oy)
 {
+    GridInitFinished=false;
     Data.clear();
+    Zoom=1;
+
     if(Rows>=0&&Columns>=0){
         GridRowNum = Rows;
         GridColumnNum = Columns;
@@ -112,6 +116,21 @@ void MainWindow::InitGrid(int Rows,int Columns,int ox,int oy)
     ui->graphicsView_2->SceneRect = QRect(L,U,R-L,D-U);
     ui->graphicsView_2->setSceneRect(QRect(L,U,R-L,D-U));
 
+
+    ui->graphicsView->setScene(&MainScene);
+    ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
+    ///ui->graphicsView_2->setTransform(QTransform().scale(1/1.05,1/1.05));
+
+    int ww = ui->graphicsView->width();
+    int hh = ui->graphicsView->height();
+
+    ///ViewRect cannot be NULL
+    SmallViewRect = SmallScene.addRect(MainToSmallDx,MainToSmallDy,(ww-30)/GridWidth*SmallGridWidth,(hh-20)/GridWidth*SmallGridWidth,QPen(Qt::red));
+
+    ChangeView(-10,-10,ww-60,hh-10);
+    GridInitFinished=true;
+
+    ReSizeView(ui->verticalSlider->value());
 }
 
 void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
@@ -306,9 +325,27 @@ void MainWindow::AddSegment(Segment NewNode)
 void MainWindow::on_pushButton_clicked()
 {
     //QMessageBox::about(this,"hehe","clicked");
+    codebuilder CODE;
+    CODE.__init__();
+    QTextDocument* Doc = ui->plainTextEdit->document();
+    for(QTextBlock bk = Doc->begin();bk!=Doc->end();bk=bk.next())///取出每一行,以\n为分割
+    {
+        CODE.Context.push_back(bk.text());
+    }
+    bool canbuild = CODE.building();
+    if(canbuild)
+    {
+        InitGrid(20,20,10,10);///需要修正
 
-    //QTextDocument* Doc = ui->plainTextEdit->document();
-    //for(QTextBlock bk = Doc->begin();bk!=Doc->end();bk=bk.next())///取出每一行,以\n为分割
+        for(int i=0;i<CODE.BuildLines.size();i++)
+        {
+            AddSegment(CODE.BuildLines[i]);
+        }
+    }
+    else
+    {
+        ///显示错误行
+    }
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -322,22 +359,29 @@ void MainWindow::DealText()
     QTextCursor Cursor(Doc);
     QTextCharFormat plainFormat(Cursor.charFormat());
     QTextCharFormat colorFormat = plainFormat;
-    colorFormat.setForeground(QColor(0,162,232));
     plainFormat.setForeground(QColor(231,231,231));
 
     Cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
     Cursor.mergeCharFormat(plainFormat);
-    QString stset[5] = {"for","double","case","int"};
-    for(int i=0;i<4;i++){
+    QString stset[5] = {"Line","Arc","from","to","#"};
+    for(int i=0;i<5;i++){
+        if(i<2) colorFormat.setForeground(QColor(0,162,232));
+        else if(i<4)    colorFormat.setForeground(QColor(162,162,0));
+        else colorFormat.setForeground(QColor(0,200,30));
         QTextCursor highlightCursor(Doc);
         while (!highlightCursor.isNull() && !highlightCursor.atEnd())
         {
-            highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords);
+            if(i<4) highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
+            else    highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindCaseSensitively);
 
             if (!highlightCursor.isNull()) {
                 //highlightCursor.movePosition(QTextCursor::WordRight,QTextCursor::KeepAnchor);//会产生abc::连带“：：”也被选中的情况
                 //highlightCursor.movePosition(QTextCursor::NextCharacter,QTextCursor::KeepAnchor,0);//不加也行
-                highlightCursor.mergeCharFormat(colorFormat);
+                if(i<4) highlightCursor.mergeCharFormat(colorFormat);
+                else {
+                    highlightCursor.movePosition(QTextCursor::EndOfBlock,QTextCursor::KeepAnchor);
+                    highlightCursor.mergeCharFormat(colorFormat);
+                }
             }
         }
     }

@@ -6,6 +6,7 @@
 #include <QtDebug>
 #include <QTextBlock>
 #include "dataandalgorithm.h"
+#include "codebuilder.h"
 namespace Ui {
 class MainWindow;
 }
@@ -44,6 +45,7 @@ public:
     double Zoom;///放缩比例尺
 
     bool TextHighLightFinished;
+    bool GridInitFinished;
 public slots:
     void ReSizeView(int value);///zoom size Ki = value/100
 private slots:

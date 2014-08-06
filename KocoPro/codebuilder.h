@@ -5,6 +5,7 @@
 #include <vector>
 #include <QGraphicsScene>
 #include <QtDebug>
+#include "dataandalgorithm.h"
 
 using namespace std;
 
@@ -12,8 +13,13 @@ class codebuilder
 {
 public:
     codebuilder();
+    void __init__();
+
+    bool building();
 public:
-    QString Text;
+    vector<QString> Context;
+    vector<Segment> BuildLines;
+    vector<int> WainingLines;
 };
 
 #endif // CODEBUILDER_H
