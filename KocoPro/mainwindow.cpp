@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     GridWidth = 40.0;
     Zoom = 1.0;
     InitGrid(20,20,10,10);
+
+
+
 /*
     ui->graphicsView->setScene(&MainScene);
     ui->graphicsView_2->setScene(&SmallScene);///Small map is too small so need to redraw a simple picture
@@ -131,6 +134,8 @@ void MainWindow::InitGrid(int Rows,int Columns,int ox,int oy)
     GridInitFinished=true;
 
     ReSizeView(ui->verticalSlider->value());
+    //ui->tableWidget->clear();
+    ui->tableWidget->setRowCount(0);
 }
 
 void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
@@ -320,6 +325,78 @@ void MainWindow::AddSegment(Segment NewNode)
 
     Data.MainMapLinesItem.push_back(MainItem);
     Data.SmallMapLinesItem.push_back(SmallItem);
+
+    int TableId = Data.Table.size()-1;
+    int Siz = (int)Data.Table[TableId].Jvx.size();
+    int row = ui->tableWidget->rowCount();
+    ui->tableWidget->setRowCount(row+1);
+    QTableWidget* table = ui->tableWidget;
+    for(int c=0;c<6;c++)
+    {
+        QTableWidgetItem* LineHehe= new QTableWidgetItem;
+        switch(c)
+        {
+            case 0:LineHehe->setText("New");break;
+            case 1:LineHehe->setText("Line");break;
+            case 2:LineHehe->setText(":");break;
+            case 3:LineHehe->setText("...");break;
+            case 4:LineHehe->setText("...");break;
+            case 5:LineHehe->setText("...");break;
+        }
+
+
+        table->setItem(row, c, LineHehe);
+    }
+    for(int i=0;i<Siz;i++)
+    {
+        row = ui->tableWidget->rowCount();
+        ui->tableWidget->setRowCount(row+1);
+        QTableWidgetItem *itemJrx, *itemJvx,*itemDx,*itemJry, *itemJvy,*itemDy;
+        itemJrx = new QTableWidgetItem;
+        itemJvx = new QTableWidgetItem;
+        itemDx = new QTableWidgetItem;
+        itemJry = new QTableWidgetItem;
+        itemJvy = new QTableWidgetItem;
+        itemDy = new QTableWidgetItem;
+
+
+
+        QString txt = QString("%1").arg(Data.Table[TableId].Jrx[i]);
+        itemJrx->setText(txt);
+        table->setItem(row, 0, itemJrx);
+
+        txt = QString("%1").arg(Data.Table[TableId].Jvx[i]);
+        itemJvx->setText(txt);
+        table->setItem(row, 1, itemJvx);
+
+        switch(Data.Table[TableId].dX[i])
+        {
+            case -1: txt="-1";break;
+            case 0: txt="";break;
+            case 1: txt="+1";break;
+        }
+        itemDx->setText(txt);
+        table->setItem(row, 2, itemDx);
+
+        txt = QString("%1").arg(Data.Table[TableId].Jry[i]);
+        itemJry->setText(txt);
+        table->setItem(row, 3, itemJry);
+
+        txt = QString("%1").arg(Data.Table[TableId].Jvy[i]);
+        itemJvy->setText(txt);
+        table->setItem(row, 4, itemJvy);
+
+        switch(Data.Table[TableId].dY[i])
+        {
+            case -1: txt="-1";break;
+            case 0: txt="";break;
+            case 1: txt="+1";break;
+        }
+        itemDy->setText(txt);
+        table->setItem(row, 5, itemDy);
+
+        qDebug()<<"row "<<row<<"\n";
+    }
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -336,7 +413,7 @@ void MainWindow::on_pushButton_clicked()
     if(canbuild)
     {
         int aU=10,aD=-10,aL=-10,aR=10;
-        for(int i=0;i<CODE.BuildLines.size();i++)
+        for(int i=0;i<(int)CODE.BuildLines.size();i++)
         {
             if(CODE.BuildLines[i].Lab=='L')
             {
@@ -391,22 +468,22 @@ void MainWindow::DealText()
 
     Cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
     Cursor.mergeCharFormat(plainFormat);
-    QString stset[6] = {"Line","Arc","from","to","#","Warning"};
-    for(int i=0;i<6;i++){
+    QString stset[10] = {"Line","Arc","from","to","sweep","#","Warning"};
+    for(int i=0;i<7;i++){
         if(i<2) colorFormat.setForeground(QColor(0,162,232));
-        else if(i<4)    colorFormat.setForeground(QColor(162,162,0));
-        else if(i<5) colorFormat.setForeground(QColor(0,200,30));
+        else if(i<5)    colorFormat.setForeground(QColor(162,162,0));
+        else if(i<6) colorFormat.setForeground(QColor(0,200,30));
         else colorFormat.setForeground(QColor(231,80,0));
         QTextCursor highlightCursor(Doc);
         while (!highlightCursor.isNull() && !highlightCursor.atEnd())
         {
-            if(i<4) highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
+            if(i<5) highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
             else    highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindCaseSensitively);
 
             if (!highlightCursor.isNull()) {
                 //highlightCursor.movePosition(QTextCursor::WordRight,QTextCursor::KeepAnchor);//会产生abc::连带“：：”也被选中的情况
                 //highlightCursor.movePosition(QTextCursor::NextCharacter,QTextCursor::KeepAnchor,0);//不加也行
-                if(i<4) highlightCursor.mergeCharFormat(colorFormat);
+                if(i<5) highlightCursor.mergeCharFormat(colorFormat);
                 else {
                     highlightCursor.movePosition(QTextCursor::EndOfBlock,QTextCursor::KeepAnchor);
                     highlightCursor.mergeCharFormat(colorFormat);

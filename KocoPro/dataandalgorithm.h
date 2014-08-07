@@ -5,6 +5,7 @@
 #include <vector>
 #include <QGraphicsScene>
 #include <QtDebug>
+#include <cmath>
 
 using namespace std;
 

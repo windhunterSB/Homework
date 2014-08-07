@@ -146,12 +146,21 @@ void DataAndAlgorithm::AddSegment(Segment NewNode)
     ///start DDA:
     if(NewNode.Lab=='L')
     {///直线插补
-        SetBitsN(8);
+        int dx = std::abs((double)(NewNode.End.x()-NewNode.Start.x()))+1;
+        int dy = std::abs((double)(NewNode.End.y()-NewNode.Start.y()))+1;
+        int len = max(dy,dx);
+        int bits = 0;
+        while((1<<bits)<=len) bits++;
+        SetBitsN(bits);
         DDALineFunc(NewNode,NPath,NArr,Ntable);
     }
     else///圆弧插补
     {
-        SetBitsN(8);
+        QPointF Arr = NewNode.Start - NewNode.Center;
+        int R = sqrt(Arr.x()*Arr.x()+Arr.y()*Arr.y()) + 1;
+        int bits = 0;
+        while((1<<bits)<=R) bits++;
+        SetBitsN(bits);
         DDACircleFunc(NewNode,NPath,NArr,Ntable);
     }
     DDAPath.push_back(NArr);
