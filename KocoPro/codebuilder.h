@@ -6,7 +6,7 @@
 #include <QGraphicsScene>
 #include <QtDebug>
 #include "dataandalgorithm.h"
-
+#include <cmath>
 using namespace std;
 
 class codebuilder

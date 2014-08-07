@@ -335,9 +335,29 @@ void MainWindow::on_pushButton_clicked()
     bool canbuild = CODE.building();
     if(canbuild)
     {
-        InitGrid(20,20,10,10);///需要修正
-
+        int aU=10,aD=-10,aL=-10,aR=10;
         for(int i=0;i<CODE.BuildLines.size();i++)
+        {
+            if(CODE.BuildLines[i].Lab=='L')
+            {
+                aU=max(aU,(int)max(CODE.BuildLines[i].Start.y(),CODE.BuildLines[i].End.y())+4 );
+                aD=min(aD,(int)min(CODE.BuildLines[i].Start.y(),CODE.BuildLines[i].End.y())-4 );
+                aL=min(aL,(int)min(CODE.BuildLines[i].Start.x(),CODE.BuildLines[i].End.x())-4 );
+                aR=max(aR,(int)max(CODE.BuildLines[i].Start.x(),CODE.BuildLines[i].End.x())+4 );
+            }
+            else
+            {
+                QPointF Arr = CODE.BuildLines[i].Start - CODE.BuildLines[i].Center;
+                double R = sqrt(Arr.x()*Arr.x()+Arr.y()*Arr.y());
+                aU=max(aU,(int)(CODE.BuildLines[i].Center.y()+R)+4);
+                aD=min(aD,(int)(CODE.BuildLines[i].Center.y()-R)-4);
+                aL=min(aL,(int)(CODE.BuildLines[i].Center.x()-R)-4);
+                aR=max(aR,(int)(CODE.BuildLines[i].Center.x()+R)+4);
+            }
+        }
+        InitGrid(aU-aD,aR-aL,-aL,-aD);///需要修正
+
+        for(int i=0;i<(int)(CODE.BuildLines.size());i++)
         {
             AddSegment(CODE.BuildLines[i]);
         }
@@ -345,6 +365,14 @@ void MainWindow::on_pushButton_clicked()
     else
     {
         ///显示错误行
+
+        int warningLine = CODE.WainingLines[0];
+        QTextDocument* Doc = ui->plainTextEdit->document();
+        QTextCursor Cursor(Doc);
+        Cursor.movePosition(QTextCursor::NextBlock,QTextCursor::MoveAnchor,warningLine);
+        Cursor.insertText("Warning: ");
+
+        //qDebug()<<"WarningColor:: Line:"<<warningLine<<endl;
     }
 }
 
@@ -363,11 +391,12 @@ void MainWindow::DealText()
 
     Cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
     Cursor.mergeCharFormat(plainFormat);
-    QString stset[5] = {"Line","Arc","from","to","#"};
-    for(int i=0;i<5;i++){
+    QString stset[6] = {"Line","Arc","from","to","#","Warning"};
+    for(int i=0;i<6;i++){
         if(i<2) colorFormat.setForeground(QColor(0,162,232));
         else if(i<4)    colorFormat.setForeground(QColor(162,162,0));
-        else colorFormat.setForeground(QColor(0,200,30));
+        else if(i<5) colorFormat.setForeground(QColor(0,200,30));
+        else colorFormat.setForeground(QColor(231,80,0));
         QTextCursor highlightCursor(Doc);
         while (!highlightCursor.isNull() && !highlightCursor.atEnd())
         {
