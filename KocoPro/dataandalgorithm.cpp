@@ -33,6 +33,7 @@ void DataAndAlgorithm::clear()
     Table.clear();
     MainMapLinesItem.clear();
     SmallMapLinesItem.clear();
+    memset(ErrorCnt,0,sizeof(ErrorCnt));
 }
 
 int NearInt(double xx)
@@ -69,6 +70,20 @@ void DataAndAlgorithm::DDALineFunc(Segment& Seg,vector<QPoint>& Path,vector<QPoi
             Path.push_back(QPoint(Path[lastpos].x()+dx,Path[lastpos].y()+dy));
             lastpos++;
         }
+    }
+    ///Err Cnt:
+    ///ax+by+c=0
+    QPointF dA = Seg.End - Seg.Start;
+    double a = -dA.y(), b = dA.x();
+    double c = -(Seg.Start.x()*a+Seg.Start.y()*b);
+    for(int i=0;i<Path.size();i++)
+    {
+        double x=Path[i].x(),y=Path[i].y();
+        double err = Abs(x*a+y*b+c)/sqrt(a*a+b*b);
+        int errid = int(err*20);
+        if(errid>39) errid=39;
+        ErrorCnt[errid]++;
+        ///qDebug() << x<<" "<<y<<" : "<<err<<"\n";
     }
 }
 
@@ -125,6 +140,21 @@ void DataAndAlgorithm::DDACircleFunc(Segment& Seg,vector<QPoint>& Path,vector<QP
         //if(tim>2000) break;
         //qDebug()<<tim<<" : "<<Jvx<<" , "<<Jvy<<" :: "<<xx<<" , "<<yy<<" :: "<<Jrx<<" "<<Jry<<" :: "<<CntX<<" "<<CntY<<"\n";
     }
+    ///Err Cnt:
+    ///(x-x0)^2+(y-y0)^2=R^2
+    double x0 = Seg.Center.x(), y0 = Seg.Center.x();
+    QPointF dA = Seg.Start - Seg.Center;
+    double r = sqrt(dA.x()*dA.x()+dA.y()*dA.y());
+    for(int i=0;i<Path.size();i++)
+    {
+        double x=Path[i].x(),y=Path[i].y();
+        double err = Abs(sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))-r);
+        int errid = int(err*20);
+        if(errid>39) errid=39;
+        ErrorCnt[errid]++;
+        ///qDebug() << x<<" "<<y<<" : "<<err<<"\n";
+    }
+
 }
 
 void DataAndAlgorithm::AddSegment(Segment NewNode)
@@ -165,5 +195,5 @@ void DataAndAlgorithm::AddSegment(Segment NewNode)
     }
     DDAPath.push_back(NArr);
     PathPoint.push_back(NPath);
-    Table.push_back(Ntable);
+    Table.push_back(Ntable);    
 }

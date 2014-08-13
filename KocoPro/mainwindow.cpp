@@ -136,6 +136,11 @@ void MainWindow::InitGrid(int Rows,int Columns,int ox,int oy)
     ReSizeView(ui->verticalSlider->value());
     //ui->tableWidget->clear();
     ui->tableWidget->setRowCount(0);
+
+    ///Chart View
+    ChartScene.clear();
+    ui->graphicsView_4->setScene(&ChartScene);
+    UpdataChart();
 }
 
 void MainWindow::ChangeView(qreal x,qreal y,qreal w,qreal h)
@@ -183,6 +188,26 @@ void MainWindow::ReSizeView(int value)
     {
         return;
     }
+}
+
+void MainWindow::UpdataChart()
+{
+    ChartScene.clear();
+    ///根据Data里的ErrorCnt画统计表
+    double sum = 0,mx=0;
+    double rate[64];
+    for(int i=0;i<40;i++)
+    {
+        sum+=Data.ErrorCnt[i];
+    }
+    sum=std::max(1.0,sum);
+    for(int i=0;i<40;i++)
+    {
+        rate[i]+=(double)Data.ErrorCnt[i]/sum;
+        mx=std::max(mx,rate[i]);
+    }
+    ///??????画图
+    //ChartScene.addLine(0,0,100,100,QPen(Qt::white,1.0,Qt::SolidLine));
 }
 
 QPointF MainWindow::MainMapchangeXY(double x,double y)///将坐标点，转变为大地图中的点
@@ -395,7 +420,7 @@ void MainWindow::AddSegment(Segment NewNode)
         itemDy->setText(txt);
         table->setItem(row, 5, itemDy);
 
-        qDebug()<<"row "<<row<<"\n";
+        //qDebug()<<"row "<<row<<"\n";
     }
 }
 
@@ -438,6 +463,8 @@ void MainWindow::on_pushButton_clicked()
         {
             AddSegment(CODE.BuildLines[i]);
         }
+
+        UpdataChart();
     }
     else
     {

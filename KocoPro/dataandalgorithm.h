@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QtDebug>
 #include <cmath>
+#include <cstring>
 
 using namespace std;
 
@@ -62,6 +63,7 @@ public:
     vector<SegmentTable> Table;
     vector<SegmentLineItem> MainMapLinesItem,SmallMapLinesItem;
     ///http://wenku.baidu.com/view/4f053402bed5b9f3f90f1c24.html
+    int ErrorCnt[64];
 public:
     void AddSegment(Segment NewNode);
     void clear();

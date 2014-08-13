@@ -24,6 +24,8 @@ public:
 
     void AddSegment(Segment NewNode);
     void DealText();
+
+    void UpdataChart();
 private:
     QPointF MainMapchangeXY(double x,double y);///将坐标点，转变为大地图中的点
     QPointF SmallMapchangeXY(double x,double y);///将坐标点，转变为小地图中的点
@@ -35,6 +37,7 @@ public:
     static const int MAXNUM = 1000;///THE MAXNUM OF GridRowNum,GridColumNum
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
+    QGraphicsScene ChartScene;
 
     QRect ViewRect;
     QGraphicsRectItem* SmallViewRect;
