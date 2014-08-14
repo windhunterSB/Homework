@@ -518,7 +518,15 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-
+    MyText="";
+    ExchangeBoard EB(this);
+    if(EB.exec()==QDialog::Accepted)
+    {
+        ///QMessageBox::about(this,"ok","ok");
+        ui->plainTextEdit->clear();
+        ui->plainTextEdit->insertPlainText(MyText);
+    }
+    ///else QMessageBox::about(this,"cancel","cancel");
 }
 
 void MainWindow::DealText()

@@ -7,6 +7,7 @@
 #include <QTextBlock>
 #include "dataandalgorithm.h"
 #include "codebuilder.h"
+#include "exchangeboard.h"
 namespace Ui {
 class MainWindow;
 }
@@ -49,6 +50,8 @@ public:
 
     bool TextHighLightFinished;
     bool GridInitFinished;
+
+    QString MyText;
 public slots:
     void ReSizeView(int value);///zoom size Ki = value/100
 private slots:

@@ -18,15 +18,18 @@ SOURCES += main.cpp\
     graphicsview_smallmap.cpp \
     slider_viewsize.cpp \
     dataandalgorithm.cpp \
-    codebuilder.cpp
+    codebuilder.cpp \
+    exchangeboard.cpp
 
 HEADERS  += mainwindow.h \
     graphicsview_mainmap.h \
     graphicsview_smallmap.h \
     slider_viewsize.h \
     dataandalgorithm.h \
-    codebuilder.h
+    codebuilder.h \
+    exchangeboard.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    exchangeboard.ui
 
 OTHER_FILES +=
