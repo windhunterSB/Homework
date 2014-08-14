@@ -34,7 +34,7 @@ public:
     int GridRowNum,GridColumnNum;
     double GridWidth,SmallGridWidth;
     double MainToSmallDx,MainToSmallDy,MainToSmallD;
-    static const int MAXNUM = 1000;///THE MAXNUM OF GridRowNum,GridColumNum
+    static const int MAXNUM = 1024;///THE MAXNUM OF GridRowNum,GridColumNum
     QGraphicsScene MainScene;
     QGraphicsScene SmallScene;
     QGraphicsScene ChartScene;

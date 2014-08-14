@@ -81,7 +81,7 @@ void DataAndAlgorithm::DDALineFunc(Segment& Seg,vector<QPoint>& Path,vector<QPoi
         double x=Path[i].x(),y=Path[i].y();
         double err = Abs(x*a+y*b+c)/sqrt(a*a+b*b);
         int errid = int(err*20);
-        if(errid>39) errid=39;
+        if(errid>59) errid=59;
         ErrorCnt[errid]++;
         ///qDebug() << x<<" "<<y<<" : "<<err<<"\n";
     }
@@ -108,6 +108,7 @@ void DataAndAlgorithm::DDACircleFunc(Segment& Seg,vector<QPoint>& Path,vector<QP
     int xx = Path[0].x()*16-cx;
     int yy = Path[0].y()*16-cy;
     int dx,dy,limit=1<<(bitsN+4);
+    ///Jrx=Jry=limit/2;
     int ddx = dArr.x()>0?1:-1;
     int ddy = dArr.y()>0?1:-1;
     int lastpos=0;
@@ -142,7 +143,7 @@ void DataAndAlgorithm::DDACircleFunc(Segment& Seg,vector<QPoint>& Path,vector<QP
     }
     ///Err Cnt:
     ///(x-x0)^2+(y-y0)^2=R^2
-    double x0 = Seg.Center.x(), y0 = Seg.Center.x();
+    double x0 = Seg.Center.x(), y0 = Seg.Center.y();
     QPointF dA = Seg.Start - Seg.Center;
     double r = sqrt(dA.x()*dA.x()+dA.y()*dA.y());
     for(int i=0;i<Path.size();i++)
@@ -150,7 +151,7 @@ void DataAndAlgorithm::DDACircleFunc(Segment& Seg,vector<QPoint>& Path,vector<QP
         double x=Path[i].x(),y=Path[i].y();
         double err = Abs(sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))-r);
         int errid = int(err*20);
-        if(errid>39) errid=39;
+        if(errid>59) errid=59;
         ErrorCnt[errid]++;
         ///qDebug() << x<<" "<<y<<" : "<<err<<"\n";
     }

@@ -190,24 +190,60 @@ void MainWindow::ReSizeView(int value)
     }
 }
 
+void addTextToPos(QGraphicsScene* Scene,const QString& Text,const QColor& Color,const QFont& Font,qreal x,qreal y)
+{
+    QGraphicsTextItem* txt = Scene->addText(Text,Font);
+    txt->setPos(x,y);
+    txt->setDefaultTextColor(Color);
+}
+
 void MainWindow::UpdataChart()
 {
     ChartScene.clear();
     ///根据Data里的ErrorCnt画统计表
-    double sum = 0,mx=0;
+    double sum = 0,mx=0.01;///防止mx为0，因为要除以他
     double rate[64];
-    for(int i=0;i<40;i++)
+    for(int i=0;i<60;i++)
     {
         sum+=Data.ErrorCnt[i];
     }
     sum=std::max(1.0,sum);
-    for(int i=0;i<40;i++)
+    for(int i=0;i<60;i++)
     {
-        rate[i]+=(double)Data.ErrorCnt[i]/sum;
+        rate[i]=(double)Data.ErrorCnt[i]/sum;
         mx=std::max(mx,rate[i]);
     }
     ///??????画图
     //ChartScene.addLine(0,0,100,100,QPen(Qt::white,1.0,Qt::SolidLine));
+    int W = ui->graphicsView_4->width(), H = ui->graphicsView_4->height();
+    int ww = 20, U = ww , D = H - ww , L = ww*3/2 , R = W - ww;
+    ui->graphicsView_4->setSceneRect(0,0,W-3,H-3);
+    ChartScene.addLine(L,0,L,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(L,D,W,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(L+(R-L)/6,D-5,L+(R-L)/6,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(L+(R-L)/3,D-5,L+(R-L)/3,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(L+(R-L)/2,D-5,L+(R-L)/2,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(L+(R-L)*2/3,D-5,L+(R-L)*2/3,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(L+(R-L)*5/6,D-5,L+(R-L)*5/6,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    ChartScene.addLine(R,D-5,R,D,QPen(Qt::white,1.0,Qt::SolidLine));
+    addTextToPos(&ChartScene,"0",Qt::white,this->font(),L,D);
+    addTextToPos(&ChartScene,"0.5",Qt::white,this->font(),L+(R-L)/6-7,D);
+    addTextToPos(&ChartScene,"1.0",Qt::white,this->font(),L+(R-L)/3-7,D);
+    addTextToPos(&ChartScene,"1.5",Qt::white,this->font(),L+(R-L)/2-7,D);
+    addTextToPos(&ChartScene,"2.0",Qt::white,this->font(),L+(R-L)*2/3-7,D);
+    addTextToPos(&ChartScene,"2.5",Qt::white,this->font(),L+(R-L)*5/6-10,D);
+    addTextToPos(&ChartScene,"Position Error",Qt::yellow,this->font(),R-50,D);
+    addTextToPos(&ChartScene,"Rate",Qt::yellow,this->font(),L+2,U-15);
+    int Top = U + ww*3/2,MxH = D-Top;
+    ChartScene.addLine(L,Top,W,Top,QPen(Qt::white,1.0,Qt::DashLine));
+    addTextToPos(&ChartScene,QString::number(mx,'g',2),Qt::white,this->font(),0,Top-10);
+
+    for(int i=0;i<60;i++)
+    {
+        double h = rate[i]/mx*(double)MxH;
+        double d = D,u = d-h, l = (double)L+(double)i*(double)(R-L)/60, r = (double)L+(double)(i+1)*(double)(R-L)/60;
+        ChartScene.addRect(l,u,r-l,d-u,QPen(QColor(243,77,5)) ,QBrush(QColor(250,164,112)));
+    }
 }
 
 QPointF MainWindow::MainMapchangeXY(double x,double y)///将坐标点，转变为大地图中的点
