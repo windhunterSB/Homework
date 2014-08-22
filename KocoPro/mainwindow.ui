@@ -581,7 +581,7 @@
      <string notr="true"/>
     </property>
     <property name="text">
-     <string>AUTOCODE</string>
+     <string>HELP</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">

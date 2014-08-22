@@ -18,5 +18,7 @@ ExchangeBoard::~ExchangeBoard()
 void ExchangeBoard::on_buttonBox_accepted()
 {
     MainWindow *pa = (MainWindow*)parent();
-    pa->MyText = ui->textEdit->toPlainText();
+
+
+    //pa->MyText = ui->textEdit->toPlainText();
 }

@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     GridWidth = 40.0;
     Zoom = 1.0;
     InitGrid(20,20,10,10);
-
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->insertPlainText("#Line: (Ex,Ey)\n#Line: from (Sx,Sy) to (Ex,Ey)\n#Arc: (Cx,Cy) from (Sx,Sy) sweep degree\n#degree in [-360,360]\n#Arc: (Cx,Cy) from (Sx,Sy) to (Ex,Ey) Clock/Unclock\n#第一次使用请单机\“HELP\”看使用说明\n");
 
 
 /*
@@ -523,8 +524,8 @@ void MainWindow::on_pushButton_3_clicked()
     if(EB.exec()==QDialog::Accepted)
     {
         ///QMessageBox::about(this,"ok","ok");
-        ui->plainTextEdit->clear();
-        ui->plainTextEdit->insertPlainText(MyText);
+        ///ui->plainTextEdit->clear();
+        ///ui->plainTextEdit->insertPlainText(MyText);
     }
     ///else QMessageBox::about(this,"cancel","cancel");
 }
@@ -539,22 +540,22 @@ void MainWindow::DealText()
 
     Cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
     Cursor.mergeCharFormat(plainFormat);
-    QString stset[10] = {"Line","Arc","from","to","sweep","#","Warning"};
-    for(int i=0;i<7;i++){
+    QString stset[10] = {"Line","Arc","from","to","sweep","Clock","Unclock","#","Warning"};
+    for(int i=0;i<9;i++){
         if(i<2) colorFormat.setForeground(QColor(0,162,232));
-        else if(i<5)    colorFormat.setForeground(QColor(162,162,0));
-        else if(i<6) colorFormat.setForeground(QColor(0,200,30));
+        else if(i<7)    colorFormat.setForeground(QColor(162,162,0));
+        else if(i<8) colorFormat.setForeground(QColor(0,200,30));
         else colorFormat.setForeground(QColor(231,80,0));
         QTextCursor highlightCursor(Doc);
         while (!highlightCursor.isNull() && !highlightCursor.atEnd())
         {
-            if(i<5) highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
+            if(i<7) highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
             else    highlightCursor = Doc->find(stset[i], highlightCursor,QTextDocument::FindCaseSensitively);
 
             if (!highlightCursor.isNull()) {
                 //highlightCursor.movePosition(QTextCursor::WordRight,QTextCursor::KeepAnchor);//会产生abc::连带“：：”也被选中的情况
                 //highlightCursor.movePosition(QTextCursor::NextCharacter,QTextCursor::KeepAnchor,0);//不加也行
-                if(i<5) highlightCursor.mergeCharFormat(colorFormat);
+                if(i<7) highlightCursor.mergeCharFormat(colorFormat);
                 else {
                     highlightCursor.movePosition(QTextCursor::EndOfBlock,QTextCursor::KeepAnchor);
                     highlightCursor.mergeCharFormat(colorFormat);
@@ -570,4 +571,12 @@ void MainWindow::on_plainTextEdit_textChanged()
 ///文本改变时发生
 {
     if(TextHighLightFinished) {TextHighLightFinished=false;DealText();}
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ///Reset
+    InitGrid(20,20,10,10);
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->insertPlainText("#Line: (Ex,Ey)\n#Line: from (Sx,Sy) to (Ex,Ey)\n#Arc: (Cx,Cy) from (Sx,Sy) sweep degree\n#degree in [-360,360]\n#Arc: (Cx,Cy) from (Sx,Sy) to (Ex,Ey) Clock/Unclock\n");
 }

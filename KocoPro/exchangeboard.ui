@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>556</width>
+    <height>451</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>20</y>
+     <x>470</x>
+     <y>10</y>
      <width>81</width>
      <height>241</height>
     </rect>
@@ -29,14 +29,77 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QPlainTextEdit" name="plainTextEdit">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>40</y>
-     <width>201</width>
-     <height>171</height>
+     <x>10</x>
+     <y>10</y>
+     <width>451</width>
+     <height>431</height>
     </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+   <property name="plainText">
+    <string>功能说明：
+软件由主视图，全局视图（右上角小地图），误差统计图，插补计算表，与代码输入框构成；
+其中：
+主视图可以鼠标左键拖动，鼠标滚轮缩放；
+
+全局视图可以点击快速定位、也可滚轮缩放
+
+代码框为仿真平台唯一输入方法。
+
+代码框说明：
+在左下角编写直线与圆弧代码，点击RUN运行；
+4种代码范式是可接受的：
+1、直线：
+Line: from S to E
+S与E是起点终点坐标，可以是小数，表示S到E的直线段
+如：
+Line: from (0,0) to (34,76)
+Line: from (-99,66.4) to (834,-76)
+2、直线
+Line: E
+上一条线段或圆弧终点到E点的直线段，若为第一段，则等价Line: from (0,0) to E
+如：
+Line: (-77,4)
+3、圆弧
+Arc: C from S sweep D
+C与S为圆弧圆心与起始点坐标，D为绕转角度，范围是[-360,360]其中D&gt;0是逆时针，&lt;0为顺时针,360为1圈
+如：
+Arc: (0,0) from (100,0) sweep 90
+Arc: (100,100) from (0,0) sweep -270
+4、圆弧
+Arc: C from S to E Clock/Unclock
+C、S、E是圆心起点和终点， Clock/Unclock为选择绕转方向顺时针或逆时针
+如：
+Arc:(0,0) from (100,0) to (0,100) Clock
+Arc:(0,0) from (100,0) to (0,100) Unclock
+==========================
+注意：
+1、代码一行只能输入一句代码
+如：Line：(1,1) Line: (2,2) 是不对的
+需要把它们分在两行；另外一个完整语句必须写在一行内，这里的行以回车结尾，如果一行太长自动换行不算两行代码（虽然看起来像两行）
+2、空行是合法的，包括一行中有很多空格；
+3、关键字有Line, Arc, from, to, sweep, Clock, Unclock，, #, Warning
+其中 # 为注释语句，一行中#之后的内容编译忽略；如果一句话出现问题，该句会被自动标上Warning，需要您的修改
+#################################
+附一个Sample：
+你可以直接粘贴以下代码到代码框并运行
+#H
+Line: from (8,150) to (2,10)
+Line: from (5,80) to (50,80)
+Line: from (53,150) to (47,10)
+#i
+Line: from (80,90) to (76,10)
+Line: from (76,130) to (85,110)
+#!
+Arc: ( 120,140) from ( 126 , 140 ) sweep 180
+Line: (120,30)
+Line: (126,140)
+Arc: (120,15) from (123,15) sweep -360</string>
    </property>
   </widget>
  </widget>
