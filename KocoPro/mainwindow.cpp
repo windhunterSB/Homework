@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QGraphicsItem>
 #include <cmath>
+#include <vector>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Zoom = 1.0;
     InitGrid(20,20,10,10);
     ui->plainTextEdit->clear();
-    ui->plainTextEdit->insertPlainText("#Line: (Ex,Ey)\n#Line: from (Sx,Sy) to (Ex,Ey)\n#Arc: (Cx,Cy) from (Sx,Sy) sweep degree\n#degree in [-360,360]\n#Arc: (Cx,Cy) from (Sx,Sy) to (Ex,Ey) Clock/Unclock\n#第一次使用请单机\“HELP\”看使用说明\n");
+    ui->plainTextEdit->insertPlainText("#Line: (Ex,Ey)\n#Line: from (Sx,Sy) to (Ex,Ey)\n#Arc: (Cx,Cy) from (Sx,Sy) sweep degree\n#degree in [-360,360]\n#Arc: (Cx,Cy) from (Sx,Sy) to (Ex,Ey) Clock/Unclock\n#第一次使用请点击\“HELP\”看使用说明\n");
 
 
 /*
@@ -264,6 +265,7 @@ QPointF MainWindow::SmallMapchangeXY(double x,double y)
 void MainWindow::AddSegment(Segment NewNode)
 {
     SegmentLineItem MainItem,SmallItem;
+    vector<int> InsertId;
 
     if(NewNode.Lab=='L')
     {
@@ -285,6 +287,7 @@ void MainWindow::AddSegment(Segment NewNode)
             QGraphicsItem* Smalltmp = SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),1.0,Qt::SolidLine));
             SmallItem.CaluLine.push_back(Smalltmp);
         }
+        InsertId.push_back(pos);
     }
     else
     {
@@ -380,7 +383,7 @@ void MainWindow::AddSegment(Segment NewNode)
                 QGraphicsItem* Smalltmp = SmallScene.addLine(S.x(),S.y(),E.x(),E.y(),QPen(QColor(34,177,76),1.0,Qt::SolidLine));
                 SmallItem.CaluLine.push_back(Smalltmp);
             }
-
+            InsertId.push_back(pos);
         }
 
     }
@@ -388,76 +391,80 @@ void MainWindow::AddSegment(Segment NewNode)
     Data.MainMapLinesItem.push_back(MainItem);
     Data.SmallMapLinesItem.push_back(SmallItem);
 
-    int TableId = Data.Table.size()-1;
-    int Siz = (int)Data.Table[TableId].Jvx.size();
-    int row = ui->tableWidget->rowCount();
-    ui->tableWidget->setRowCount(row+1);
-    QTableWidget* table = ui->tableWidget;
-    for(int c=0;c<6;c++)
+    //int TableId = Data.Table.size()-1;
+    for(int iii=0;iii<(int)InsertId.size();iii++)
     {
-        QTableWidgetItem* LineHehe= new QTableWidgetItem;
-        switch(c)
-        {
-            case 0:LineHehe->setText("New");break;
-            case 1:LineHehe->setText("Line");break;
-            case 2:LineHehe->setText(":");break;
-            case 3:LineHehe->setText("...");break;
-            case 4:LineHehe->setText("...");break;
-            case 5:LineHehe->setText("...");break;
-        }
-
-
-        table->setItem(row, c, LineHehe);
-    }
-    for(int i=0;i<Siz;i++)
-    {
-        row = ui->tableWidget->rowCount();
+        int TableId = InsertId[iii];
+        int Siz = (int)Data.Table[TableId].Jvx.size();
+        int row = ui->tableWidget->rowCount();
         ui->tableWidget->setRowCount(row+1);
-        QTableWidgetItem *itemJrx, *itemJvx,*itemDx,*itemJry, *itemJvy,*itemDy;
-        itemJrx = new QTableWidgetItem;
-        itemJvx = new QTableWidgetItem;
-        itemDx = new QTableWidgetItem;
-        itemJry = new QTableWidgetItem;
-        itemJvy = new QTableWidgetItem;
-        itemDy = new QTableWidgetItem;
-
-
-
-        QString txt = QString("%1").arg(Data.Table[TableId].Jrx[i]);
-        itemJrx->setText(txt);
-        table->setItem(row, 0, itemJrx);
-
-        txt = QString("%1").arg(Data.Table[TableId].Jvx[i]);
-        itemJvx->setText(txt);
-        table->setItem(row, 1, itemJvx);
-
-        switch(Data.Table[TableId].dX[i])
+        QTableWidget* table = ui->tableWidget;
+        for(int c=0;c<6;c++)
         {
-            case -1: txt="-1";break;
-            case 0: txt="";break;
-            case 1: txt="+1";break;
+            QTableWidgetItem* LineHehe= new QTableWidgetItem;
+            switch(c)
+            {
+                case 0:LineHehe->setText("New");break;
+                case 1:LineHehe->setText("Line");break;
+                case 2:LineHehe->setText(":");break;
+                case 3:LineHehe->setText("...");break;
+                case 4:LineHehe->setText("...");break;
+                case 5:LineHehe->setText("...");break;
+            }
+
+
+            table->setItem(row, c, LineHehe);
         }
-        itemDx->setText(txt);
-        table->setItem(row, 2, itemDx);
-
-        txt = QString("%1").arg(Data.Table[TableId].Jry[i]);
-        itemJry->setText(txt);
-        table->setItem(row, 3, itemJry);
-
-        txt = QString("%1").arg(Data.Table[TableId].Jvy[i]);
-        itemJvy->setText(txt);
-        table->setItem(row, 4, itemJvy);
-
-        switch(Data.Table[TableId].dY[i])
+        for(int i=0;i<Siz;i++)
         {
-            case -1: txt="-1";break;
-            case 0: txt="";break;
-            case 1: txt="+1";break;
-        }
-        itemDy->setText(txt);
-        table->setItem(row, 5, itemDy);
+            row = ui->tableWidget->rowCount();
+            ui->tableWidget->setRowCount(row+1);
+            QTableWidgetItem *itemJrx, *itemJvx,*itemDx,*itemJry, *itemJvy,*itemDy;
+            itemJrx = new QTableWidgetItem;
+            itemJvx = new QTableWidgetItem;
+            itemDx = new QTableWidgetItem;
+            itemJry = new QTableWidgetItem;
+            itemJvy = new QTableWidgetItem;
+            itemDy = new QTableWidgetItem;
 
-        //qDebug()<<"row "<<row<<"\n";
+
+
+            QString txt = QString("%1").arg(Data.Table[TableId].Jrx[i]);
+            itemJrx->setText(txt);
+            table->setItem(row, 0, itemJrx);
+
+            txt = QString("%1").arg(Data.Table[TableId].Jvx[i]);
+            itemJvx->setText(txt);
+            table->setItem(row, 1, itemJvx);
+
+            switch(Data.Table[TableId].dX[i])
+            {
+                case -1: txt="-1";break;
+                case 0: txt="";break;
+                case 1: txt="+1";break;
+            }
+            itemDx->setText(txt);
+            table->setItem(row, 2, itemDx);
+
+            txt = QString("%1").arg(Data.Table[TableId].Jry[i]);
+            itemJry->setText(txt);
+            table->setItem(row, 3, itemJry);
+
+            txt = QString("%1").arg(Data.Table[TableId].Jvy[i]);
+            itemJvy->setText(txt);
+            table->setItem(row, 4, itemJvy);
+
+            switch(Data.Table[TableId].dY[i])
+            {
+                case -1: txt="-1";break;
+                case 0: txt="";break;
+                case 1: txt="+1";break;
+            }
+            itemDy->setText(txt);
+            table->setItem(row, 5, itemDy);
+
+            //qDebug()<<"row "<<row<<"\n";
+        }
     }
 }
 
